@@ -4,6 +4,7 @@ package com.company.Application.Commands;
 
 import com.company.Application.Data;
 
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -26,8 +27,6 @@ public class CommandInvoker {
         commands.put("help", new Help(controllersProvider, this));
         commands.put("info", new Info(controllersProvider));
         commands.put("insert", new Insert(controllersProvider));
-        commands.put("execute_script", new ExecuteScript(controllersProvider));
-        commands.put("exit", new Exit(controllersProvider));
         commands.put("save", new Save(controllersProvider));
         commands.put("show", new Show(controllersProvider));
         commands.put("remove_key", new Remove(controllersProvider));
@@ -50,15 +49,16 @@ public class CommandInvoker {
      * execute command by it's name
      * @param data Data
      */
-    public Data executeCommand(Data data){
+    public void executeCommand(Data data) throws IOException {
+
         String commandName = data.getMessage()[0].toLowerCase();
-        Data responseData =  commands.get(commandName).execute(data);
+        commands.get(commandName).execute(data);
         if(enteredCommandsCounter == 13)
             enteredCommands.remove();
         else
             enteredCommandsCounter++;
         enteredCommands.add(commandName);
-        return responseData;
+
     }
 
     /**
@@ -72,8 +72,10 @@ public class CommandInvoker {
     /**
      * uses to call function getInfo in each command
      */
-    void commandsInfo(){
-        commands.forEach((k,v)->v.getInfo());
+    String commandsInfo(){
+        StringBuilder rez = new StringBuilder();
+        commands.forEach((k,v)->rez.append(v.getInfo()+"\n"));
+        return rez.toString();
     }
 
 

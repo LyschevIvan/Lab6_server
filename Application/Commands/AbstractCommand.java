@@ -3,6 +3,8 @@ package com.company.Application.Commands;
 
 import com.company.Application.Data;
 
+import java.io.IOException;
+
 /**
  * designate all Commands interface
  */
@@ -18,11 +20,11 @@ abstract public class AbstractCommand {
      * executes command
      * @param data Data
      */
-    abstract Data execute(Data data);
+    abstract void execute(Data data)throws IOException;
 
 
     /**
      * print info about command
      */
-    abstract void getInfo();
+    abstract String getInfo();
 }

@@ -12,14 +12,14 @@ class Save extends AbstractCommand {
     }
 
     @Override
-    public Data execute(Data data) {
+    public void execute(Data data) {
         controllersProvider.getXmlController().convertToXml(controllersProvider.getTreeMapController());
-        return null;
+        System.out.println("Collection was saved!");
     }
 
 
     @Override
-    public void getInfo() {
-        System.out.println("save : сохраняет коллекцию в файл");
+    public String getInfo() {
+       return "save : сохраняет коллекцию в файл";
     }
 }

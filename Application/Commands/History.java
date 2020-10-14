@@ -3,6 +3,8 @@ package com.company.Application.Commands;
 
 import com.company.Application.Data;
 
+import java.io.IOException;
+
 /**
  * shows last 13 entered commands
  */
@@ -14,16 +16,16 @@ class History extends AbstractCommand {
     }
 
     @Override
-    public Data execute(Data data) {
-        for (String s : commandInvoker.getEnteredCommands()){
-            System.out.println(s);
-        }
-        return null;
+    public void execute(Data data) throws IOException {
+        StringBuilder stringBuilder = new StringBuilder();
+        commandInvoker.getEnteredCommands().forEach(s -> stringBuilder.append(s+"\n"));
+
+        controllersProvider.getServerController().response(new Data(stringBuilder.toString()));
     }
 
 
     @Override
-    public void getInfo() {
-        System.out.println("history : выводит последние 13 введенных команд");
+    public String getInfo() {
+        return "history : выводит последние 13 введенных команд";
     }
 }

@@ -3,6 +3,8 @@ package com.company.Application.Commands;
 
 import com.company.Application.Data;
 
+import java.io.IOException;
+
 /**
  * remove by key
  */
@@ -12,16 +14,17 @@ class Remove extends AbstractCommand {
     }
 
     @Override
-    public Data execute(Data data) {
+    public void execute(Data data) throws IOException {
         Integer k = Integer.valueOf(data.getMessage()[1]);
         controllersProvider.getTreeMapController().remove(k);
-        return null;
+        Data response = new Data("Продукт успешно удален!");
+        controllersProvider.getServerController().response(response);
     }
 
 
 
     @Override
-    public void getInfo() {
-        System.out.println("remove_key k : удаляет элемент с ключем k");
+    public String getInfo() {
+        return "remove_key k : удаляет элемент с ключем k";
     }
 }

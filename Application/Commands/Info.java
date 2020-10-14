@@ -3,6 +3,8 @@ package com.company.Application.Commands;
 
 import com.company.Application.Data;
 
+import java.io.IOException;
+
 /**
  * shows information about collection
  */
@@ -12,13 +14,12 @@ class Info extends AbstractCommand {
     }
 
     @Override
-    public Data execute(Data data) {
-        controllersProvider.getTreeMapController().showInfo(controllersProvider.getXmlController());
-        return null;
+    public void execute(Data data) throws IOException {
+        controllersProvider.getServerController().response(new Data(controllersProvider.getTreeMapController().getInfo(controllersProvider.getXmlController())));
     }
 
     @Override
-    public void getInfo() {
-        System.out.println("info : выводит информацию о коллекции");
+    public String getInfo() {
+        return "info : выводит информацию о коллекции";
     }
 }

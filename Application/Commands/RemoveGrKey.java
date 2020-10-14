@@ -14,7 +14,7 @@ class RemoveGrKey extends AbstractCommand {
     }
 
     @Override
-    public Data execute(Data data) {
+    public void execute(Data data) {
         Integer key = Integer.valueOf(data.getMessage()[1]);
         Iterator<Integer> keyIterator = controllersProvider.getTreeMapController().getKeyIterator();
         while (keyIterator.hasNext()){
@@ -22,12 +22,12 @@ class RemoveGrKey extends AbstractCommand {
             if(k>key)
                 keyIterator.remove();
         }
-        return null;
+
     }
 
 
     @Override
-    public void getInfo() {
-        System.out.println("remove_greater_key key : удалить из коллекции все элементы, ключ которых превышает заданный");
+    public String getInfo() {
+        return "remove_greater_key key : удалить из коллекции все элементы, ключ которых превышает заданный";
     }
 }

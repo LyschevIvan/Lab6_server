@@ -4,9 +4,12 @@ package com.company.Application.Commands;
 import com.company.Application.Data;
 import com.company.Application.ProductClasses.Product;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
+
 
 /**
  * print collection content to System.out
@@ -17,18 +20,19 @@ class Show extends AbstractCommand {
     }
 
     @Override
-    public Data execute(Data data){
-//        controllersProvider.getTreeMapController().forEach((k,v)->System.out.println(k +" " + v.toString()));
-        ArrayList<Product> sorted = (ArrayList) controllersProvider.getTreeMapController().getStream().sorted().collect(Collectors.toList());
-
-        return new Data(sorted);
+    public void execute(Data data) throws IOException {
+        TreeMap<Integer,Product> products = controllersProvider.getTreeMapController().getProducts();
+        List<Map.Entry<Integer, Product>> sorted = products.entrySet().stream().sorted(Map.Entry.comparingByValue()).collect(Collectors.toList());
+        for (Map.Entry<Integer, Product> entry : sorted){
+            controllersProvider.getServerController().response(new Data(entry.getKey(),entry.getValue()));
+        }
 
     }
 
 
 
     @Override
-    public void getInfo() {
-        System.out.println("show : выводит элементы коллекции");
+    public String  getInfo() {
+       return "show : выводит элементы коллекции";
     }
 }

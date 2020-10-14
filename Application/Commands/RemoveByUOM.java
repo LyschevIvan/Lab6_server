@@ -16,7 +16,7 @@ class RemoveByUOM extends AbstractCommand {
     }
 
     @Override
-    public Data execute(Data data) {
+    public void execute(Data data) {
         UnitOfMeasure unitOfMeasure;
         switch (data.getMessage()[1].toLowerCase()){
             case "kg": unitOfMeasure = UnitOfMeasure.KILOGRAMS; break;
@@ -32,13 +32,12 @@ class RemoveByUOM extends AbstractCommand {
                 valueIterator.remove();
             }
         }
-        return null;
     }
 
 
 
     @Override
-    public void getInfo() {
-        System.out.println("remove_all_by_unit_of_measure (KG|PCS|GR|MG|null) : удалить из коллекции все элементы значение поля unitOfmeasure которого эквивалентно заданному");
+    public String getInfo() {
+        return "remove_all_by_unit_of_measure (KG|PCS|GR|MG|null) : удалить из коллекции все элементы значение поля unitOfmeasure которого эквивалентно заданному";
     }
 }

@@ -4,9 +4,11 @@ package com.company.Application.Commands;
 import com.company.Application.Data;
 import com.company.Application.ProductClasses.Product;
 
-import java.util.Iterator;
+import java.io.IOException;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * shows if PartNumber contains substring
@@ -17,30 +19,26 @@ class FilterPartNumber extends AbstractCommand {
     }
 
     @Override
-    public Data execute(Data data) {
+    public void execute(Data data) throws IOException {
         String subStr = data.getMessage()[1];
-        boolean foundOnce = false;
-        Iterator<Product> values = controllersProvider.getTreeMapController().getValueIterator();
         Pattern pattern = Pattern.compile(subStr);
-        Matcher matcher;
-
-        while (values.hasNext()){
-            Product value = values.next();
-            matcher = pattern.matcher(value.getPartNumber());
-            if(matcher.find()) {
-                System.out.println(value.toString());
-                foundOnce = true;
+        TreeMap<Integer, Product> products = controllersProvider.getTreeMapController().getProducts();
+        List<Map.Entry<Integer,Product>> filtered = products.entrySet().stream().filter(e -> pattern.matcher(e.getValue().getPartNumber()).find()).collect(Collectors.toList());
+        if (!filtered.isEmpty())
+        {
+            for(Map.Entry<Integer,Product> entry : filtered){
+                controllersProvider.getServerController().response(new Data(entry.getKey(), entry.getValue()));
             }
-
         }
-        if (!foundOnce)
-            System.out.println("Совпадений нет");
-        return null;
-    }
+        else {
+            controllersProvider.getServerController().response(new Data("Совпадений нет"));
+        }
+
+   }
 
 
     @Override
-    public void getInfo() {
-        System.out.println("filter_contains_part_number string : вывести элементы, значение поля partNumber которых содержит заданную подстроку");
+    public String getInfo(){
+        return "filter_contains_part_number string : вывести элементы, значение поля partNumber которых содержит заданную подстроку";
     }
 }

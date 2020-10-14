@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.TreeMap;
@@ -17,7 +18,6 @@ import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
 /**
- * Singleton
  * uses to manage collection
  */
 @XmlRootElement
@@ -40,7 +40,7 @@ public class TreeMapController
      * @return TreeMap
      */
     @XmlElement
-    TreeMap<Integer, Product> getProducts() {
+    public TreeMap<Integer, Product> getProducts() {
         return products;
     }
 
@@ -64,15 +64,17 @@ public class TreeMapController
     /**
      * shows info about collection file
      */
-    public void showInfo(XMLController xmlController){
+    public String getInfo(XMLController xmlController){
         SimpleDateFormat date_format = new SimpleDateFormat("HH:mm:ss dd.MM.yy");
 
         BasicFileAttributes attributes = xmlController.getAttrs();
-        System.out.println("Тип: TreeMap");
-        System.out.println("Количество элементов: " + products.size());
-        System.out.println("Дата создания: " + (attributes == null ? "файл еще не создавался" : date_format.format(attributes.creationTime().toMillis())));
-        System.out.println("Дата последнего изменения: " + (attributes == null ? "файл еще не создавался" : date_format.format(attributes.lastModifiedTime().toMillis())));
 
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Тип: TreeMap").append('\n');
+        stringBuilder.append("Количество элементов: ").append(products.size()).append('\n');
+        stringBuilder.append("Дата создания: ").append(attributes == null ? "файл еще не создавался" : date_format.format(attributes.creationTime().toMillis())).append('\n');
+        stringBuilder.append("Дата последнего изменения: ").append(attributes == null ? "файл еще не создавался" : date_format.format(attributes.lastModifiedTime().toMillis()));
+        return stringBuilder.toString();
     }
 
     /**
@@ -98,18 +100,7 @@ public class TreeMapController
         return products.values().iterator();
     }
 
-    /**
-     * do function for each element
-     * @param biConsumer BiConsumer
-     */
-    public void forEach(BiConsumer biConsumer){
-        products.forEach(biConsumer);
 
-    }
-
-    public Stream getStream(){
-        return products.values().stream();
-    }
 
     /**
      * returns list of Id
@@ -122,12 +113,5 @@ public class TreeMapController
         return idList;
     }
 
-    /**
-     * returns product by id
-     * @param id int
-     * @return Product
-     */
-    public Product getByID(int id){
-        return products.get(id);
-}
+
 }

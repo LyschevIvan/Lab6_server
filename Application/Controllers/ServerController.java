@@ -1,47 +1,87 @@
 package com.company.Application.Controllers;
 
-import com.company.Application.Commands.CommandInvoker;
 import com.company.Application.Data;
+
 
 import java.io.*;
 import java.net.*;
+import java.nio.ByteBuffer;
 
 public class ServerController {
     private final static int BUFFER_SIZE = 2048;
-    Data data;
-    DatagramSocket channel;
-    byte[] buff = new byte[BUFFER_SIZE];
-    DatagramPacket packet = new DatagramPacket(buff, buff.length);
-    CommandInvoker commandInvoker;
-    public ServerController(CommandInvoker commandInvoker){
-        this.commandInvoker = commandInvoker;
-        try {
-            channel = new DatagramSocket(8989);
+    ServerSocket serverSocket;
+    Socket socket;
+    ByteBuffer buff = ByteBuffer.allocate(BUFFER_SIZE);
+    public ServerController(int port) throws IOException {
+            serverSocket = new ServerSocket(port);
+    }
+
+
+    void checkConnection(){
+        if (socket == null){
+            try {
+                System.out.println("waiting for connection...");
+                socket = serverSocket.accept();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            System.out.println("connected");
         }
-        catch (SocketException e) {
-            e.printStackTrace();
-        }
+
+
+    }
+
+    public Data nextRequest() throws IOException, ClassNotFoundException {
+
+            try {
+                checkConnection();
+                InputStream in = socket.getInputStream();
+                System.out.println("waiting for data...");
+                ObjectInputStream objectInputStream = new ObjectInputStream(in);
+
+                return (Data) objectInputStream.readObject();
+
+
+            } catch (SocketException e) {
+                System.out.println("disconnected");
+                socket.close();
+                socket = null;
+                return null;
+            }
+
+    }
+
+
+    public void response(Data responseData) throws IOException {
+
+            try{
+                checkConnection();
+                OutputStream out = socket.getOutputStream();
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+                objectOutputStream.writeObject(responseData);
+                objectOutputStream.flush();
+                buff.put(outputStream.toByteArray()).flip();
+                out.write(buff.array());
+                out.flush();
+                buff.clear();
+            }
+            catch (SocketException e){
+                System.out.println("disconnected");
+                socket.close();
+                socket = null;
+                socket = null;
+            }
+
+
+
+
 
 
 
     }
-    public void nextRequest() throws IOException, ClassNotFoundException {
 
-        channel.receive(packet);
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(packet.getData());
-        ObjectInputStream objectInputStream =  new ObjectInputStream(byteArrayInputStream);
 
-        data = (Data) objectInputStream.readObject();
-        System.out.println(1);
-        Data responseData = commandInvoker.executeCommand(data);
 
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-        objectOutputStream.writeObject(responseData);
-        buff = byteArrayOutputStream.toByteArray();
-        DatagramPacket responsePacket = new DatagramPacket(buff, buff.length, packet.getAddress(), packet.getPort());
-        channel.send(responsePacket);
-        System.out.println("sent");
 
-    }
 }
